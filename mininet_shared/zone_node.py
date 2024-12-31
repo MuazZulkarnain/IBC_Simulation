@@ -9,7 +9,7 @@ import os
 class ZoneNode:
     def __init__(self, node_name):
         self.node_name = node_name
-        self.balance = 1000  # Initial token balance
+        self.balance = 100000  # Initial token balance
         self.ibc_clients = {}  # Clients for other chains
         self.connections = {}  # Connections to other chains
         self.channels = {}     # Channels for applications

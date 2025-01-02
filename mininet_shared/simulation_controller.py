@@ -7,6 +7,8 @@ import asyncio
 import socket
 import json
 import os
+import csv
+from datetime import datetime
 
 class SimulationController:
     def __init__(self, duration=60, tps=1000, config_file='zone_configs.json'):
@@ -37,6 +39,25 @@ class SimulationController:
 
         # Load configuration
         self.load_configuration(config_file)
+
+        # Path to shared logs directory
+        self.shared_logs_dir = '/home/ubuntu/IBC_Simulation/mininet_shared/logs'
+
+        # Ensure the logs directory exists
+        if not os.path.exists(self.shared_logs_dir):
+            os.makedirs(self.shared_logs_dir)
+
+        # Initialize simulation transactions file
+        self.sim_transactions_file = os.path.join(self.shared_logs_dir, 'simulation_transactions.csv')
+        self.init_sim_transactions_file()
+
+    def init_sim_transactions_file(self):
+        # Initialize simulation_transactions.csv file with headers
+        if not os.path.exists(self.sim_transactions_file):
+            with open(self.sim_transactions_file, 'w', newline='') as f:
+                fieldnames = ['transaction_id', 'timestamp', 'source_zone', 'destination_zone', 'amount']
+                writer = csv.DictWriter(f, fieldnames=fieldnames)
+                writer.writeheader()
 
     def load_configuration(self, config_file):
         # Define the path to the shared directory
@@ -123,8 +144,25 @@ class SimulationController:
             self.transaction_id += 1
             transaction_id = self.transaction_id
 
+        # Log transaction initiation
+        await self.log_transaction_initiation(transaction_id, source_zone, destination_zone, amount)
+
         # Send transfer command
         await self.send_transfer_command(source_zone, destination_zone, amount, transaction_id)
+
+    async def log_transaction_initiation(self, transaction_id, source_zone, destination_zone, amount):
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        async with self.lock:
+            with open(self.sim_transactions_file, 'a', newline='') as f:
+                fieldnames = ['transaction_id', 'timestamp', 'source_zone', 'destination_zone', 'amount']
+                writer = csv.DictWriter(f, fieldnames=fieldnames)
+                writer.writerow({
+                    'transaction_id': transaction_id,
+                    'timestamp': timestamp,
+                    'source_zone': source_zone,
+                    'destination_zone': destination_zone,
+                    'amount': amount
+                })
 
     async def send_transfer_command(self, source_zone, destination_zone, amount, transaction_id):
         command = f"transfer {destination_zone} {amount} {transaction_id}"
@@ -208,13 +246,15 @@ class SimulationController:
         summary = "\n".join(summary_lines)
 
         # Write summary to a file
-        with open('simulation_detailed_log.txt', 'w') as f:
+        detailed_log_file = os.path.join(self.shared_logs_dir, 'simulation_detailed_log.txt')
+        with open(detailed_log_file, 'w') as f:
             f.write(summary)
 
     def log_errors(self):
         if self.errors:
             # Write errors to a separate log file
-            with open('simulation_errors.log', 'w') as f:
+            error_log_file = os.path.join(self.shared_logs_dir, 'simulation_errors.log')
+            with open(error_log_file, 'w') as f:
                 for error in self.errors:
                     f.write(error + '\n')
 

@@ -74,7 +74,7 @@ def run():
         zone_lower = zone.lower()
         zone_switch = net.get(f's{2+i}')
         zone_val = net.get(f'z{zone_lower}_v1')
-        zone_full = net.get(f'z{zone_lower}_f1')
+        # zone_full = net.get(f'z{zone_lower}_f1')
         relayer = net.get(f'r{zone}')
 
         # Assign IPs to Relayer interfaces
@@ -121,21 +121,21 @@ def run():
 
     # Start Cosmos Hub Nodes with logging
     hv1.cmd('python3 /home/ubuntu/IBC_Simulation/mininet_shared/hub_node.py hv1 > /home/ubuntu/IBC_Simulation/mininet_shared/logs/hv1_log.txt 2>&1 &')
-    hv2.cmd('python3 /home/ubuntu/IBC_Simulation/mininet_shared/hub_node.py hv2 > /home/ubuntu/IBC_Simulation/mininet_shared/logs/hv2_log.txt 2>&1 &')
+    # hv2.cmd('python3 /home/ubuntu/IBC_Simulation/mininet_shared/hub_node.py hv2 > /home/ubuntu/IBC_Simulation/mininet_shared/logs/hv2_log.txt 2>&1 &')
 
     # Start Zone Nodes and Relayers with logging
     for i, zone in enumerate(zones):
         zone_label = zone
         zone_lower = zone.lower()
         zone_val = net.get(f'z{zone_lower}_v1')
-        zone_full = net.get(f'z{zone_lower}_f1')
+        # zone_full = net.get(f'z{zone_lower}_f1')
         relayer = net.get(f'r{zone}')
 
         # Start Zone Validator Node
         zone_val.cmd(f'python3 /home/ubuntu/IBC_Simulation/mininet_shared/zone_node.py z{zone_lower}_v1 > /home/ubuntu/IBC_Simulation/mininet_shared/logs/z{zone_lower}_v1_log.txt 2>&1 &')
 
-        # Start Zone Full Node (placeholder, modify as needed)
-        zone_full.cmd(f'python3 /home/ubuntu/IBC_Simulation/mininet_shared/zone_node.py z{zone_lower}_f1 > /home/ubuntu/IBC_Simulation/mininet_shared/logs/z{zone_lower}_f1_log.txt 2>&1 &')
+        # Start Zone Full Node
+        # zone_full.cmd(f'python3 /home/ubuntu/IBC_Simulation/mininet_shared/zone_node.py z{zone_lower}_f1 > /home/ubuntu/IBC_Simulation/mininet_shared/logs/z{zone_lower}_f1_log.txt 2>&1 &')
 
         # Start Relayer Node
         relayer.cmd(f'python3 /home/ubuntu/IBC_Simulation/mininet_shared/relayer.py r{zone_label} {zone_label} > /home/ubuntu/IBC_Simulation/mininet_shared/logs/r{zone_label}_log.txt 2>&1 &')

@@ -7,14 +7,19 @@ from mininet.link import TCLink
 from mininet.log import setLogLevel, info
 from mininet.cli import CLI
 import os
+import json
 
 # Define zones and their properties (only once at the top level)
 zones = [
     {'id': 'z1', 'name': 'MMU', 'latency': '0ms'},
-    {'id': 'z2', 'name': 'Monash', 'latency': '0.165ms'},
+    {'id': 'z2', 'name': 'Monash Malaysia', 'latency': '0.165ms'},
     {'id': 'z3', 'name': 'USIM', 'latency': '0.173ms'},
     {'id': 'z4', 'name': 'UKM', 'latency': '0.14ms'},
     {'id': 'z5', 'name': 'UPM', 'latency': '0.106ms'},
+    {'id': 'z6', 'name': 'UNITEN', 'latency': '0.091ms'},
+    {'id': 'z7', 'name': 'Nottingham Malaysia', 'latency': '0.250ms'},
+    {'id': 'z8', 'name': 'MIMOS', 'latency': '0.217ms'},
+    {'id': 'z9', 'name': 'TMRnD', 'latency': '0.161ms'},
     # Add or remove zones and set their latencies here
 ]
 
@@ -154,8 +159,8 @@ def run():
         zone_full.cmd(f'python3 /home/ubuntu/IBC_Simulation/mininet_shared/zone_node.py {zone_id}_f1 > /home/ubuntu/IBC_Simulation/mininet_shared/logs/{zone_id}_f1_log.txt 2>&1 &')
 
         # Start Relayer Node
-        relayer.cmd(f'python3 /home/ubuntu/IBC_Simulation/mininet_shared/relayer.py r{zone_id} "{zone}" > /home/ubuntu/IBC_Simulation/mininet_shared/logs/r{zone_id}_log.txt 2>&1 &')
-
+        relayer.cmd(f'python3 /home/ubuntu/IBC_Simulation/mininet_shared/relayer.py r{zone_id} {zone_id} > /home/ubuntu/IBC_Simulation/mininet_shared/logs/r{zone_id}_log.txt 2>&1 &')
+    
     info('*** Simulation running. Use the Mininet CLI to interact.\n')
 
     # Display host information
@@ -167,6 +172,36 @@ def run():
             if intf.name != 'lo':
                 ip = host.IP(intf=intf)
                 info(f"        {intf.name}: {ip}\n")
+
+    # Collect zone information
+    zone_configs = []
+    for zone_info in zones:
+        zone_id = zone_info['id']
+        zone_name = zone_info['name']
+        latency = zone_info['latency']
+        i = int(zone_id[1:]) - 1
+
+        # Retrieve node IP addresses
+        zone_val = net.get(f'{zone_id}_v1')
+        zone_val_ip = zone_val.IP()
+
+        controller_ip = f'10.0.{i+1}.200'
+
+        zone_config = {
+            'id': zone_id,
+            'name': zone_name,
+            'latency': latency,
+            'index': i,
+            'validator_ip': zone_val_ip,
+            'controller_ip': controller_ip
+            # Add more properties if needed
+        }
+        zone_configs.append(zone_config)
+
+    # Write zone configurations to a JSON file
+    zone_config_file = os.path.join(shared_dir, 'zone_configs.json')
+    with open(zone_config_file, 'w') as f:
+        json.dump(zone_configs, f, indent=4)
 
     # Start CLI for user interaction
     CLI(net)

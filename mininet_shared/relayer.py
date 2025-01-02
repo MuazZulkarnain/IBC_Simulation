@@ -7,12 +7,20 @@ import time
 import os
 
 class Relayer:
-    def __init__(self, node_name, zone_label):
+    def __init__(self, node_name, zone_id):
         self.node_name = node_name
-        self.zone_label = zone_label
-        self.hub_ip = f'10.0.0.{10 + ord(zone_label) - ord("A")}'
-        self.zone_ip = f'10.0.{ord(zone_label) - ord("A") + 1}.10'
+        self.zone_id = zone_id
+        self.zone_index = int(zone_id[1:])  # Extract index from 'z1', 'z2', etc.
+        i = self.zone_index - 1  # Zero-based index to match the indexing in cosmos_topology.py
+
+        # IP addresses for this relayer node
+        self.hub_ip = f'10.0.0.{10 + i}'          # E.g., '10.0.0.10', '10.0.0.11'
+        self.zone_ip = f'10.0.{self.zone_index}.10'  # E.g., '10.0.1.10', '10.0.2.10'
         self.listen_port = 8000  # Port to listen for IBC packets
+
+        # IP addresses to forward messages to
+        self.hub_dest_ip = '10.0.0.1'  # Assuming the hub node IP is '10.0.0.1'
+        self.zone_dest_ip = f'10.0.{self.zone_index}.1'  # Assuming the zone validator IP is '10.0.{zone_index}.1'
 
         # Set up logging
         self.logs_dir = '/home/ubuntu/IBC_Simulation/mininet_shared/logs'
@@ -46,6 +54,7 @@ class Relayer:
                     message = data.decode()
                     self.log(f"Received packet from Zone: {message}")
                     self.forward_to_hub(message)
+                conn.close()
 
     def listen_hub(self):
         # Listen for IBC packets from Hub
@@ -60,10 +69,11 @@ class Relayer:
                     message = data.decode()
                     self.log(f"Received packet from Hub: {message}")
                     self.forward_to_zone(message)
+                conn.close()
 
     def forward_to_hub(self, message):
         # Forward packet to Hub
-        dest_ip = '10.0.0.1'  # Hub node IP (adjust as needed)
+        dest_ip = self.hub_dest_ip  # '10.0.0.1', adjust if necessary
         port = 8000
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -75,7 +85,7 @@ class Relayer:
 
     def forward_to_zone(self, message):
         # Forward packet to Zone
-        dest_ip = self.zone_ip.replace('.10', '.1')  # Assuming zone node IP ends with .1
+        dest_ip = self.zone_dest_ip  # e.g., '10.0.1.1'
         port = 8000
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -87,7 +97,7 @@ class Relayer:
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Usage: python3 relayer.py <node_name> <zone_label>")
+        print("Usage: python3 relayer.py <node_name> <zone_id>")
         sys.exit(1)
     relayer = Relayer(sys.argv[1], sys.argv[2])
     relayer.start()

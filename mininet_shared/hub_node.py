@@ -13,19 +13,40 @@ class HubNode:
         self.listen_port = 8000
         self.zone_relayers = {}  # Mapping of zones to relayer IPs
 
-        # Initialize relayer IPs for each zone (adjust IPs as needed)
-        self.zone_relayers = {
-            'A': '10.0.0.10',  # Relayer A IP on Hub network
-            'B': '10.0.0.11',  # Relayer B IP on Hub network
-            'C': '10.0.0.12',  # Relayer C IP on Hub network
-        }
-
         # Set up logging
         self.logs_dir = '/home/ubuntu/IBC_Simulation/mininet_shared/logs'
         if not os.path.exists(self.logs_dir):
             os.makedirs(self.logs_dir)
         self.log_file = os.path.join(self.logs_dir, f'{self.node_name}_transfer_log.txt')
         self.log('Hub node initialized.')
+
+        # Initialize relayer IPs dynamically
+        self.initialize_zone_relayers()
+
+    def initialize_zone_relayers(self):
+        """
+        Initialize the mapping of zone IDs to their relayer IPs on the hub network.
+        Assumes relayer IPs are assigned as per the updated IP scheme.
+        """
+        # Read zone configurations from shared JSON file
+        shared_dir = '/home/ubuntu/IBC_Simulation/mininet_shared'
+        config_file = os.path.join(shared_dir, 'zone_configs.json')
+
+        if not os.path.exists(config_file):
+            self.log(f"Configuration file '{config_file}' not found.")
+            sys.exit(1)
+
+        import json
+        with open(config_file, 'r') as f:
+            zone_configs = json.load(f)
+
+        for zone_config in zone_configs:
+            zone_id = zone_config['id']  # e.g., 'z1'
+            i = zone_config['index']     # Zero-based index
+            relayer_ip = f'10.0.0.{10 + i}'  # Same as in relayer and topology
+            self.zone_relayers[zone_id] = relayer_ip
+
+        self.log(f"Initialized zone relayers: {self.zone_relayers}")
 
     def log(self, message):
         timestamp = time.strftime("[%Y-%m-%d %H:%M:%S]")
@@ -55,6 +76,7 @@ class HubNode:
                     message = data.decode()
                     self.log(f"Received IBC message: {message} from {addr}")
                     self.handle_ibc_message(message)
+                conn.close()
 
     def handle_ibc_message(self, message):
         # Simplified message handling
@@ -79,20 +101,20 @@ class HubNode:
         else:
             self.log(f"Unknown message type: {message}")
 
-    def forward_to_zone(self, message, zone_label):
+    def forward_to_zone(self, message, zone_id):
         # Forward the IBC message to the destination zone's relayer
-        relayer_ip = self.zone_relayers.get(zone_label)
+        relayer_ip = self.zone_relayers.get(zone_id)
         if relayer_ip:
             port = 8000
             try:
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     s.connect((relayer_ip, port))
                     s.sendall(message.encode())
-                    self.log(f"Forwarded IBC packet to relayer for Zone {zone_label}")
+                    self.log(f"Forwarded IBC packet to relayer for Zone {zone_id} at {relayer_ip}:{port}")
             except Exception as e:
-                self.log(f"Error forwarding to Zone {zone_label}'s relayer: {e}")
+                self.log(f"Error forwarding to Zone {zone_id}'s relayer: {e}")
         else:
-            self.log(f"No relayer found for Zone {zone_label}")
+            self.log(f"No relayer found for Zone {zone_id}")
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:

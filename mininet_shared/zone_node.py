@@ -9,6 +9,8 @@ import os
 class ZoneNode:
     def __init__(self, node_name):
         self.node_name = node_name
+        self.zone_id = self.node_name.split('_')[0]  # Extract 'z1' from 'z1_v1'
+        self.zone_index = int(self.zone_id[1:])  # Extract index 1 from 'z1'
         self.balance = 100000  # Initial token balance
         self.ibc_clients = {}  # Clients for other chains
         self.connections = {}  # Connections to other chains
@@ -59,6 +61,7 @@ class ZoneNode:
                     message = data.decode()
                     self.log(f"Received IBC message: {message} from {addr}")
                     self.handle_ibc_message(message)
+                conn.close()
 
     def handle_ibc_message(self, message):
         # Simplified message handling
@@ -88,11 +91,12 @@ class ZoneNode:
             self.log(f"Initiating transfer {transaction_id} of {amount} tokens to Zone {dest_zone}. New balance: {self.balance}")
 
             # Send IBC packet to relayer
-            relayer_ip = '10.0.' + self.get_zone_network_suffix() + '.10'  # Adjust as per your IP scheme
+            relayer_ip = f'10.0.{self.zone_index}.10'  # Adjust as per your IP scheme
             relayer_port = 8000
-            packet = f'IBC_TRANSFER,{amount},{self.get_zone_label()},{self.node_name},{dest_zone},{transaction_id}'
+            packet = f'IBC_TRANSFER,{amount},{self.zone_id},{self.node_name},{dest_zone},{transaction_id}'
             try:
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                    self.log(f"Connecting to relayer at {relayer_ip}:{relayer_port}")
                     s.connect((relayer_ip, relayer_port))
                     s.sendall(packet.encode())
                     self.log(f"Sent IBC packet {transaction_id} to relayer at {relayer_ip}:{relayer_port}")
@@ -124,14 +128,7 @@ class ZoneNode:
                         self.log(f"Current balance: {self.balance}")
                     else:
                         self.log(f"Unknown command: {message}")
-
-    def get_zone_label(self):
-        # Extract zone label from node name (e.g., 'za_v1' -> 'A')
-        return self.node_name[1].upper()
-
-    def get_zone_network_suffix(self):
-        # Return the network suffix (e.g., '1' for Zone A)
-        return str(ord(self.get_zone_label()) - ord('A') + 1)
+                conn.close()
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:

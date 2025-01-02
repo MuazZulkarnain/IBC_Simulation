@@ -5,31 +5,23 @@ import time
 import random
 import asyncio
 import socket
+import json
+import os
 
 class SimulationController:
-    def __init__(self, duration=60, tps=1000):
+    def __init__(self, duration=60, tps=1000, config_file='zone_configs.json'):
         self.duration = duration  # Simulation duration in seconds
         self.tps = tps  # Desired transactions per second
         self.start_time = None
         self.end_time = None
         self.transaction_id = 0  # Counter for transaction IDs
-        self.zones = ['A', 'B', 'C']  # Available zones
 
-        # Node IP addresses
-        self.nodes = {
-            'A': '10.0.1.1',
-            'B': '10.0.2.1',
-            'C': '10.0.3.1',
-        }
+        # Load zones and nodes from configuration file
+        self.zones = []
+        self.nodes = {}       # Mapping from zone ID to node IP address
+        self.source_ips = {}  # Mapping from zone ID to source IP address
 
         self.cmd_port = 8001
-
-        # Source IPs
-        self.source_ips = {
-            'A': '10.0.1.200',
-            'B': '10.0.2.200',
-            'C': '10.0.3.200',
-        }
 
         # Metrics storage
         self.transactions_sent = 0
@@ -42,6 +34,38 @@ class SimulationController:
 
         # Errors encountered
         self.errors = []
+
+        # Load configuration
+        self.load_configuration(config_file)
+
+    def load_configuration(self, config_file):
+        # Define the path to the shared directory
+        shared_dir = '/home/ubuntu/IBC_Simulation/mininet_shared'
+
+        config_path = os.path.join(shared_dir, config_file)
+        if not os.path.exists(config_path):
+            raise FileNotFoundError(f"Configuration file '{config_path}' not found.")
+
+        # Read the JSON configuration file
+        with open(config_path, 'r') as f:
+            zone_configs = json.load(f)
+
+        # Initialize zones, nodes, and source IPs
+        for zone_config in zone_configs:
+            zone_id = zone_config['id']
+            zone_name = zone_config['name']
+            validator_ip = zone_config['validator_ip']
+            controller_ip = zone_config['controller_ip']
+
+            self.zones.append(zone_id)  # Use zone IDs as identifiers
+
+            # Map zone IDs to validator IPs (nodes)
+            self.nodes[zone_id] = validator_ip
+
+            # Map zone IDs to controller IPs (source IPs)
+            self.source_ips[zone_id] = controller_ip
+
+        print(f"Loaded configuration for zones: {self.zones}")
 
     async def start(self):
         self.start_time = time.time()
@@ -105,10 +129,11 @@ class SimulationController:
     async def send_transfer_command(self, source_zone, destination_zone, amount, transaction_id):
         command = f"transfer {destination_zone} {amount} {transaction_id}"
 
-        node_ip = self.nodes[source_zone]
+        node_ip = self.nodes.get(source_zone)
         source_ip = self.source_ips.get(source_zone)
-        if source_ip is None:
-            error_msg = f"Error: No source IP available for Zone {source_zone}"
+
+        if node_ip is None or source_ip is None:
+            error_msg = f"Error: Missing node or source IP for Zone {source_zone}"
             async with self.lock:
                 self.errors.append(error_msg)
                 self.transactions_failed += 1
@@ -164,8 +189,8 @@ class SimulationController:
         print(f"Total transactions failed: {failed_transactions}")
 
         # Optionally print average send duration if recorded
-        # average_latency = sum(self.latencies) / len(self.latencies) if self.latencies else 0
-        # print(f"Average send duration: {average_latency * 1000:.2f} ms")
+        average_latency = sum(self.latencies) / len(self.latencies) if self.latencies else 0
+        print(f"Average send duration: {average_latency * 1000:.2f} ms")
 
     def log_detailed_data(self):
         # Log detailed metrics to a file
@@ -198,10 +223,8 @@ class SimulationController:
             for error in self.errors:
                 print(error)
 
-    # Additional methods can be added here if needed
-
 if __name__ == '__main__':
-    controller = SimulationController(duration=5, tps=2000)
+    controller = SimulationController(duration=5, tps=1000, config_file='zone_configs.json')
 
     # Run the simulation using asyncio event loop
     asyncio.run(controller.start())

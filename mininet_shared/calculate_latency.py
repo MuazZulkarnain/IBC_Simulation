@@ -14,6 +14,9 @@ def main():
     # Paths to the shared directory
     shared_dir = '/home/ubuntu/IBC_Simulation/mininet_shared'
     
+    # Ensure the logs directory exists
+    os.makedirs(os.path.join(shared_dir, 'logs'), exist_ok=True)
+    
     # Path to the simulation transactions log file
     sim_log_file = os.path.join(shared_dir, 'logs', 'simulation_transactions.csv')
     
@@ -113,7 +116,6 @@ def main():
             # If transaction hasn't completed, consider its initiation time as potential end time
             if simulation_end_time is None or init_time > simulation_end_time:
                 simulation_end_time = init_time
-            # print(f"Warning: Transaction ID {tx_id} has no completion time. It may still be in progress or an error occurred.")
 
     # Ensure simulation_end_time is set
     if simulation_end_time is None:
@@ -183,7 +185,7 @@ def main():
     # 8. Time taken to finish processing all transactions
     processing_duration = (simulation_end_time - simulation_start_time).total_seconds()
 
-    # 9. Average number of transactions failed/dropped
+    # 9. Total number of transactions failed/dropped
     total_transactions_attempted = len(transactions)
     transactions_failed = total_transactions_attempted - total_transactions_processed
 
@@ -221,12 +223,22 @@ def main():
     print(f"Average Latency: {average_latency:.4f} seconds")
     print(f"Maximum Latency: {max_latency:.4f} seconds")
 
+    # Generate a run identifier (e.g., timestamp)
+    run_id = datetime.now().strftime('%Y%m%d%H%M%S')
+
     # Optionally, write send rate and throughput per second to a CSV file
     rates_csv_file = os.path.join(shared_dir, 'logs', 'rates_per_second.csv')
-    with open(rates_csv_file, 'w', newline='') as f:
-        fieldnames = ['second', 'time', 'send_rate', 'throughput']
+    # Check if the CSV file exists and if it's empty
+    file_exists = os.path.isfile(rates_csv_file)
+    file_is_empty = not os.path.exists(rates_csv_file) or os.path.getsize(rates_csv_file) == 0
+
+    # Open the CSV file in append mode
+    with open(rates_csv_file, 'a', newline='') as f:
+        fieldnames = ['run_id', 'second', 'time', 'send_rate', 'throughput']
         writer = csv.DictWriter(f, fieldnames=fieldnames)
-        writer.writeheader()
+        # Write the header only if the file doesn't exist or is empty
+        if not file_exists or file_is_empty:
+            writer.writeheader()
         # Get the union of all seconds
         all_seconds = set(send_rate_per_second.keys()).union(throughput_per_second.keys())
         for second in sorted(all_seconds):
@@ -234,11 +246,50 @@ def main():
             send_rate = send_rate_per_second.get(second, 0)
             throughput = throughput_per_second.get(second, 0)
             writer.writerow({
+                'run_id': run_id,
                 'second': second,
                 'time': time_str,
                 'send_rate': send_rate,
                 'throughput': throughput
             })
+
+    # Write summary statistics to CSV
+    summary_csv_file = os.path.join(shared_dir, 'logs', 'summary_statistics.csv')
+    # Check if the CSV file exists and is not empty
+    file_exists = os.path.isfile(summary_csv_file)
+    file_is_empty = not os.path.exists(summary_csv_file) or os.path.getsize(summary_csv_file) == 0
+
+    # Prepare the data to be written
+    summary_data = {
+        'run_id': run_id,
+        'Time Taken for Simulation (seconds)': f"{simulation_duration:.2f}",
+        'Total Transactions Processed': total_transactions_processed,
+        'Average Throughput per Second (transactions/second)': f"{average_throughput:.4f}",
+        'Standard Deviation of Throughput': f"{std_dev_throughput:.4f}",
+        'Time Taken to Finish Sending Transactions (seconds)': f"{send_duration:.2f}",
+        'Average Send Rate per Second (transactions/second)': f"{average_send_rate:.4f}",
+        'Standard Deviation of Send Rate': f"{std_dev_send_rate:.4f}",
+        'Time Taken to Finish Processing All Transactions (seconds)': f"{processing_duration:.2f}",
+        'Total Number of Transactions Failed/Dropped': transactions_failed,
+        'Error Rate for Entire Run (%)': f"{error_rate:.2f}",
+        'Average Latency (seconds)': f"{average_latency:.4f}",
+        'Maximum Latency (seconds)': f"{max_latency:.4f}",
+    }
+
+    # List of field names (keys) for the CSV header
+    fieldnames = list(summary_data.keys())
+
+    # Open the CSV file in append mode
+    with open(summary_csv_file, 'a', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        # Write the header only if the file doesn't exist or is empty
+        if not file_exists or file_is_empty:
+            writer.writeheader()
+        # Write the summary data
+        writer.writerow(summary_data)
+
+    print(f"\nSummary statistics have been appended to {summary_csv_file}")
+    print(f"Rates per second have been appended to {rates_csv_file}")
 
 if __name__ == '__main__':
     main()

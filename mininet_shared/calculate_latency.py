@@ -5,6 +5,7 @@ from datetime import datetime
 import os
 import sys
 import json
+import statistics
 
 def parse_timestamp(timestamp_str):
     return datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
@@ -43,6 +44,10 @@ def main():
         for node_name in validator_node_names
     ]
     
+    # Initialize variables for summary statistics
+    simulation_start_time = None
+    simulation_end_time = None
+
     # Read simulation transactions (initiation times)
     transactions = {}
     if not os.path.exists(sim_log_file):
@@ -81,15 +86,17 @@ def main():
     latency_data = []
     send_rate_per_second = {}
     throughput_per_second = {}
-
     for tx_id, tx in transactions.items():
         init_time = tx['init_time']
+        if simulation_start_time is None or init_time < simulation_start_time:
+            simulation_start_time = init_time
         init_seconds = int(init_time.timestamp())
-        # Update send rate per second
         send_rate_per_second[init_seconds] = send_rate_per_second.get(init_seconds, 0) + 1
 
         if tx['completion_time']:
             completion_time = tx['completion_time']
+            if simulation_end_time is None or completion_time > simulation_end_time:
+                simulation_end_time = completion_time
             latency = (completion_time - init_time).total_seconds()
             latency_data.append({
                 'transaction_id': tx_id,
@@ -97,44 +104,122 @@ def main():
                 'source_zone': tx['source_zone'],
                 'destination_zone': tx['destination_zone'],
                 'amount': tx['amount'],
+                'init_time': init_time,
+                'completion_time': completion_time,
             })
             completion_seconds = int(completion_time.timestamp())
-            # Update throughput per second
             throughput_per_second[completion_seconds] = throughput_per_second.get(completion_seconds, 0) + 1
         else:
-            print(f"Warning: Transaction ID {tx_id} has no completion time. It may still be in progress or an error occurred.")
+            # If transaction hasn't completed, consider its initiation time as potential end time
+            if simulation_end_time is None or init_time > simulation_end_time:
+                simulation_end_time = init_time
+            # print(f"Warning: Transaction ID {tx_id} has no completion time. It may still be in progress or an error occurred.")
+
+    # Ensure simulation_end_time is set
+    if simulation_end_time is None:
+        simulation_end_time = max(tx['init_time'] for tx in transactions.values())
 
     # Write latency data to CSV
     latency_csv_file = os.path.join(shared_dir, 'logs', 'latency_results.csv')
     with open(latency_csv_file, 'w', newline='') as f:
-        fieldnames = ['transaction_id', 'latency', 'source_zone', 'destination_zone', 'amount']
+        fieldnames = ['transaction_id', 'latency', 'source_zone', 'destination_zone', 'amount', 'init_time', 'completion_time']
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         for data in latency_data:
+            # Convert datetime objects to strings for CSV output
+            data['init_time'] = data['init_time'].strftime('%Y-%m-%d %H:%M:%S')
+            data['completion_time'] = data['completion_time'].strftime('%Y-%m-%d %H:%M:%S')
             writer.writerow(data)
     
-    # Print summary statistics
+    # Collect latencies for summary statistics
     latencies = [data['latency'] for data in latency_data]
+
+    # Summary Statistics Computations
+
+    # 1. Time taken for simulation
+    simulation_duration = (simulation_end_time - simulation_start_time).total_seconds()
+
+    # 2. Total transactions processed
+    total_transactions_processed = len([tx for tx in transactions.values() if tx['completion_time']])
+
+    # 3. Average throughput per second
+    if throughput_per_second:
+        total_throughput_transactions = sum(throughput_per_second.values())
+        throughput_seconds = sorted(throughput_per_second.keys())
+        throughput_duration = throughput_seconds[-1] - throughput_seconds[0] + 1
+        average_throughput = total_throughput_transactions / throughput_duration
+    else:
+        average_throughput = 0
+
+    # 4. Standard deviation of throughput
+    if throughput_per_second and len(throughput_per_second) > 1:
+        throughput_values = list(throughput_per_second.values())
+        std_dev_throughput = statistics.stdev(throughput_values)
+    else:
+        std_dev_throughput = 0.0
+
+    # 5. Time taken to finish sending transactions
+    send_times = [tx['init_time'] for tx in transactions.values()]
+    send_start_time = min(send_times)
+    send_end_time = max(send_times)
+    send_duration = (send_end_time - send_start_time).total_seconds()
+
+    # 6. Average send rate per second
+    if send_rate_per_second:
+        total_send_transactions = sum(send_rate_per_second.values())
+        send_seconds = sorted(send_rate_per_second.keys())
+        send_duration_seconds = send_seconds[-1] - send_seconds[0] + 1
+        average_send_rate = total_send_transactions / send_duration_seconds
+    else:
+        average_send_rate = 0
+
+    # 7. Standard deviation of send rate
+    if send_rate_per_second and len(send_rate_per_second) > 1:
+        send_rate_values = list(send_rate_per_second.values())
+        std_dev_send_rate = statistics.stdev(send_rate_values)
+    else:
+        std_dev_send_rate = 0.0
+
+    # 8. Time taken to finish processing all transactions
+    processing_duration = (simulation_end_time - simulation_start_time).total_seconds()
+
+    # 9. Average number of transactions failed/dropped
+    total_transactions_attempted = len(transactions)
+    transactions_failed = total_transactions_attempted - total_transactions_processed
+
+    # 10. Error rate for the entire run
+    if total_transactions_attempted:
+        error_rate = (transactions_failed / total_transactions_attempted) * 100
+    else:
+        error_rate = 0
+    
+    # 11. Average latency
     if latencies:
         average_latency = sum(latencies) / len(latencies)
-        print(f"Average Transaction Latency: {average_latency:.4f} seconds")
-        print(f"Total Transactions Processed: {len(latencies)}")
     else:
-        print("No transactions processed.")
+        average_latency = 0.0
 
-    # Print Send Rate Per Second
-    print("\nSend Rate Per Second:")
-    for second in sorted(send_rate_per_second.keys()):
-        count = send_rate_per_second[second]
-        time_str = datetime.fromtimestamp(second).strftime('%Y-%m-%d %H:%M:%S')
-        print(f"{time_str}: {count} transactions")
+    # 12. Maximum latency
+    if latencies:
+        max_latency = max(latencies)
+    else:
+        max_latency = 0.0
 
-    # Print Throughput Per Second
-    print("\nThroughput Per Second:")
-    for second in sorted(throughput_per_second.keys()):
-        count = throughput_per_second[second]
-        time_str = datetime.fromtimestamp(second).strftime('%Y-%m-%d %H:%M:%S')
-        print(f"{time_str}: {count} transactions")
+    # Print summary statistics
+    print("\nSummary Statistics:")
+    print("-------------------")
+    print(f"Time Taken for Simulation: {simulation_duration:.2f} seconds")
+    print(f"Total Transactions Processed: {total_transactions_processed}")
+    print(f"Average Throughput per Second: {average_throughput:.4f} transactions/second")
+    print(f"Standard Deviation of Throughput: {std_dev_throughput:.4f}")
+    print(f"Time Taken to Finish Sending Transactions: {send_duration:.2f} seconds")
+    print(f"Average Send Rate per Second: {average_send_rate:.4f} transactions/second")
+    print(f"Standard Deviation of Send Rate: {std_dev_send_rate:.4f}")
+    print(f"Time Taken to Finish Processing All Transactions: {processing_duration:.2f} seconds")
+    print(f"Total Number of Transactions Failed/Dropped: {transactions_failed}")
+    print(f"Error Rate for Entire Run: {error_rate:.2f}%")
+    print(f"Average Latency: {average_latency:.4f} seconds")
+    print(f"Maximum Latency: {max_latency:.4f} seconds")
 
     # Optionally, write send rate and throughput per second to a CSV file
     rates_csv_file = os.path.join(shared_dir, 'logs', 'rates_per_second.csv')

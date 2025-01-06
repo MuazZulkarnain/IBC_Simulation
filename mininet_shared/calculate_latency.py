@@ -210,9 +210,9 @@ def main():
     # Print summary statistics
     print("\nSummary Statistics:")
     print("-------------------")
-    print(f"Time Taken for Simulation: {simulation_duration:.2f} seconds")
     print(f"Time Taken to Finish Sending Transactions: {send_duration:.2f} seconds")
     print(f"Time Taken to Finish Processing All Transactions: {processing_duration:.2f} seconds")
+    print(f"Time Taken for Simulation: {simulation_duration:.2f} seconds")
     print(f"Total Transactions Processed: {total_transactions_processed}")
     print(f"Average Throughput per Second: {average_throughput:.4f} transactions/second")
     print(f"Standard Deviation of Throughput: {std_dev_throughput:.4f}")
@@ -262,9 +262,9 @@ def main():
     # Prepare the data to be written
     summary_data = {
         'run_id': run_id,
-        'Time Taken for Simulation (seconds)': f"{simulation_duration:.2f}",
         'Time Taken to Finish Sending Transactions (seconds)': f"{send_duration:.2f}",
         'Time Taken to Finish Processing All Transactions (seconds)': f"{processing_duration:.2f}",
+        'Time Taken for Simulation (seconds)': f"{simulation_duration:.2f}",
         'Total Transactions Processed': total_transactions_processed,
         'Average Throughput per Second (transactions/second)': f"{average_throughput:.4f}",
         'Standard Deviation of Throughput': f"{std_dev_throughput:.4f}",

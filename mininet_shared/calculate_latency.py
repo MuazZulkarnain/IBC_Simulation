@@ -211,13 +211,13 @@ def main():
     print("\nSummary Statistics:")
     print("-------------------")
     print(f"Time Taken for Simulation: {simulation_duration:.2f} seconds")
+    print(f"Time Taken to Finish Sending Transactions: {send_duration:.2f} seconds")
+    print(f"Time Taken to Finish Processing All Transactions: {processing_duration:.2f} seconds")
     print(f"Total Transactions Processed: {total_transactions_processed}")
     print(f"Average Throughput per Second: {average_throughput:.4f} transactions/second")
     print(f"Standard Deviation of Throughput: {std_dev_throughput:.4f}")
-    print(f"Time Taken to Finish Sending Transactions: {send_duration:.2f} seconds")
     print(f"Average Send Rate per Second: {average_send_rate:.4f} transactions/second")
     print(f"Standard Deviation of Send Rate: {std_dev_send_rate:.4f}")
-    print(f"Time Taken to Finish Processing All Transactions: {processing_duration:.2f} seconds")
     print(f"Total Number of Transactions Failed/Dropped: {transactions_failed}")
     print(f"Error Rate for Entire Run: {error_rate:.2f}%")
     print(f"Average Latency: {average_latency:.4f} seconds")
@@ -254,7 +254,7 @@ def main():
             })
 
     # Write summary statistics to CSV
-    summary_csv_file = os.path.join(shared_dir, 'logs', 'summary_statistics.csv')
+    summary_csv_file = os.path.join(shared_dir, 'summary_statistics.csv')  # Changed path to output in main directory
     # Check if the CSV file exists and is not empty
     file_exists = os.path.isfile(summary_csv_file)
     file_is_empty = not os.path.exists(summary_csv_file) or os.path.getsize(summary_csv_file) == 0
@@ -263,13 +263,13 @@ def main():
     summary_data = {
         'run_id': run_id,
         'Time Taken for Simulation (seconds)': f"{simulation_duration:.2f}",
+        'Time Taken to Finish Sending Transactions (seconds)': f"{send_duration:.2f}",
+        'Time Taken to Finish Processing All Transactions (seconds)': f"{processing_duration:.2f}",
         'Total Transactions Processed': total_transactions_processed,
         'Average Throughput per Second (transactions/second)': f"{average_throughput:.4f}",
         'Standard Deviation of Throughput': f"{std_dev_throughput:.4f}",
-        'Time Taken to Finish Sending Transactions (seconds)': f"{send_duration:.2f}",
         'Average Send Rate per Second (transactions/second)': f"{average_send_rate:.4f}",
         'Standard Deviation of Send Rate': f"{std_dev_send_rate:.4f}",
-        'Time Taken to Finish Processing All Transactions (seconds)': f"{processing_duration:.2f}",
         'Total Number of Transactions Failed/Dropped': transactions_failed,
         'Error Rate for Entire Run (%)': f"{error_rate:.2f}",
         'Average Latency (seconds)': f"{average_latency:.4f}",

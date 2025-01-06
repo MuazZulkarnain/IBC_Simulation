@@ -203,8 +203,14 @@ def run():
     with open(zone_config_file, 'w') as f:
         json.dump(zone_configs, f, indent=4)
 
+    # Run the simulation_controller.py on h1
+    print("Running simulation_controller.py on controller")
+    output = controller.cmd('python3 /home/ubuntu/IBC_Simulation/mininet_shared/simulation_controller.py')
+
     # Start CLI for user interaction
-    CLI(net)
+    # CLI(net)
+
+    # stop network
     net.stop()
 
 if __name__ == '__main__':

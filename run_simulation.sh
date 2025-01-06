@@ -1,32 +1,24 @@
 #!/bin/bash
 
-# Path to your Mininet script
-MININET_SCRIPT="./cosmos_topology.py"
+# Path to your Python script
+Simulation_Script="/home/ubuntu/IBC_Simulation/cosmos_topology.py"
 
-# Parameters for your simulations
-TEST_DURATION="10"        # Test duration in seconds
-TPS="1000"                # Transactions per second
+# Number of times to repeat the simulation
+NUM_RUNS=2
 
-# Start Mininet in the background
-sudo python3 $MININET_SCRIPT &
-MININET_PID=$!
+# Loop to run the simulation
+for (( run=1; run<=NUM_RUNS; run++ ))
+do
+    echo "Starting simulation run $run..."
 
-# Give Mininet some time to start (adjust as necessary)
-echo "Waiting for Mininet to start..."
-sleep 10
+    # Export an environment variable to be used by your Python script
+    export RUN_NUMBER="$run"
+    export RUN_DIR
 
-# Run the simulation controller inside the Mininet 'controller' node
-echo "Running simulation with duration=$TEST_DURATION and tps=$TPS"
+    # Run the Python script, redirect output, and capture any errors
+    python3 "$Simulation_Script"
 
-sudo python3 -m mininet.node -c controller python3 /home/ubuntu/IBC_Simulation/mininet_shared/simulation_controller.py --duration $TEST_DURATION --tps $TPS
+    echo "Simulation run $run completed."
+done
 
-# Wait for the simulation to complete
-echo "Simulation running..."
-sleep $((TEST_DURATION + 5))
-
-# After simulations, stop Mininet
-echo "Stopping Mininet..."
-sudo kill $MININET_PID
-sudo mn -c
-
-echo "Simulations completed."
+echo "All simulations completed."

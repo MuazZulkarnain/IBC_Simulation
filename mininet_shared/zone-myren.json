@@ -1,0 +1,74 @@
+[
+    {
+        "id": "z1",
+        "name": "MMU",
+        "latency": "0ms",
+        "index": 0,
+        "validator_ip": "10.0.1.1",
+        "controller_ip": "10.0.1.200"
+    },
+    {
+        "id": "z2",
+        "name": "Monash Malaysia",
+        "latency": "0.165ms",
+        "index": 1,
+        "validator_ip": "10.0.2.1",
+        "controller_ip": "10.0.2.200"
+    },
+    {
+        "id": "z3",
+        "name": "USIM",
+        "latency": "0.173ms",
+        "index": 2,
+        "validator_ip": "10.0.3.1",
+        "controller_ip": "10.0.3.200"
+    },
+    {
+        "id": "z4",
+        "name": "UKM",
+        "latency": "0.14ms",
+        "index": 3,
+        "validator_ip": "10.0.4.1",
+        "controller_ip": "10.0.4.200"
+    },
+    {
+        "id": "z5",
+        "name": "UPM",
+        "latency": "0.106ms",
+        "index": 4,
+        "validator_ip": "10.0.5.1",
+        "controller_ip": "10.0.5.200"
+    },
+    {
+        "id": "z6",
+        "name": "UNITEN",
+        "latency": "0.091ms",
+        "index": 5,
+        "validator_ip": "10.0.6.1",
+        "controller_ip": "10.0.6.200"
+    },
+    {
+        "id": "z7",
+        "name": "Nottingham Malaysia",
+        "latency": "0.250ms",
+        "index": 6,
+        "validator_ip": "10.0.7.1",
+        "controller_ip": "10.0.7.200"
+    },
+    {
+        "id": "z8",
+        "name": "MIMOS",
+        "latency": "0.217ms",
+        "index": 7,
+        "validator_ip": "10.0.8.1",
+        "controller_ip": "10.0.8.200"
+    },
+    {
+        "id": "z9",
+        "name": "TMRnD",
+        "latency": "0.161ms",
+        "index": 8,
+        "validator_ip": "10.0.9.1",
+        "controller_ip": "10.0.9.200"
+    }
+]

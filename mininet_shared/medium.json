@@ -1,0 +1,154 @@
+[
+    {
+        "id": "z1",
+        "name": "Milan_MI-1",
+        "latency": "2.38ms",
+        "index": 0,
+        "validator_ip": "10.0.1.1",
+        "controller_ip": "10.0.1.200"
+    },
+    {
+        "id": "z2",
+        "name": "Milan_MI-2",
+        "latency": "2.38ms",
+        "index": 1,
+        "validator_ip": "10.0.2.1",
+        "controller_ip": "10.0.2.200"
+    },
+    {
+        "id": "z3",
+        "name": "Milan_MI-3",
+        "latency": "2.38ms",
+        "index": 2,
+        "validator_ip": "10.0.3.1",
+        "controller_ip": "10.0.3.200"
+    },
+    {
+        "id": "z4",
+        "name": "Naples_NA",
+        "latency": "0.96ms",
+        "index": 3,
+        "validator_ip": "10.0.4.1",
+        "controller_ip": "10.0.4.200"
+    },
+    {
+        "id": "z5",
+        "name": "Bologna_BO",
+        "latency": "1.52ms",
+        "index": 4,
+        "validator_ip": "10.0.5.1",
+        "controller_ip": "10.0.5.200"
+    },
+    {
+        "id": "z6",
+        "name": "Padua_PD",
+        "latency": "1.97ms",
+        "index": 5,
+        "validator_ip": "10.0.6.1",
+        "controller_ip": "10.0.6.200"
+    },
+    {
+        "id": "z7",
+        "name": "Venice_VE",
+        "latency": "1.97ms",
+        "index": 6,
+        "validator_ip": "10.0.7.1",
+        "controller_ip": "10.0.7.200"
+    },
+    {
+        "id": "z8",
+        "name": "Florence_FI",
+        "latency": "1.16ms",
+        "index": 7,
+        "validator_ip": "10.0.8.1",
+        "controller_ip": "10.0.8.200"
+    },
+    {
+        "id": "z9",
+        "name": "Genoa_GE",
+        "latency": "2.00ms",
+        "index": 8,
+        "validator_ip": "10.0.9.1",
+        "controller_ip": "10.0.9.200"
+    },
+    {
+        "id": "z10",
+        "name": "Catania_CT",
+        "latency": "2.70ms",
+        "index": 9,
+        "validator_ip": "10.0.10.1",
+        "controller_ip": "10.0.10.200"
+    },
+    {
+        "id": "z11",
+        "name": "Cagliari_CA",
+        "latency": "2.08ms",
+        "index": 10,
+        "validator_ip": "10.0.11.1",
+        "controller_ip": "10.0.11.200"
+    },
+    {
+        "id": "z12",
+        "name": "Sassari_SS",
+        "latency": "1.75ms",
+        "index": 11,
+        "validator_ip": "10.0.12.1",
+        "controller_ip": "10.0.12.200"
+    },
+    {
+        "id": "z13",
+        "name": "Trieste_TS-1",
+        "latency": "2.59ms",
+        "index": 12,
+        "validator_ip": "10.0.13.1",
+        "controller_ip": "10.0.13.200"
+    },
+    {
+        "id": "z14",
+        "name": "Perugia_PG",
+        "latency": "0.68ms",
+        "index": 13,
+        "validator_ip": "10.0.14.1",
+        "controller_ip": "10.0.14.200"
+    },
+    {
+        "id": "z15",
+        "name": "Messina_ME",
+        "latency": "2.44ms",
+        "index": 14,
+        "validator_ip": "10.0.15.1",
+        "controller_ip": "10.0.15.200"
+    },
+    {
+        "id": "z16",
+        "name": "Bari_BA",
+        "latency": "1.87ms",
+        "index": 15,
+        "validator_ip": "10.0.16.1",
+        "controller_ip": "10.0.16.200"
+    },
+    {
+        "id": "z17",
+        "name": "Trento_TN",
+        "latency": "2.41ms",
+        "index": 16,
+        "validator_ip": "10.0.17.1",
+        "controller_ip": "10.0.17.200"
+    },
+    {
+        "id": "z18",
+        "name": "Lecce_LE",
+        "latency": "2.54ms",
+        "index": 17,
+        "validator_ip": "10.0.18.1",
+        "controller_ip": "10.0.18.200"
+    },
+    {
+        "id": "z19",
+        "name": "Potenza_PZ",
+        "latency": "1.57ms",
+        "index": 18,
+        "validator_ip": "10.0.19.1",
+        "controller_ip": "10.0.19.200"
+    }
+]

@@ -1,162 +1,234 @@
 [
     {
         "id": "z1",
-        "name": "Rome_RM-1",
-        "latency": "0ms",
+        "name": "Netherlands",
+        "latency": "1.44ms",
         "index": 0,
         "validator_ip": "10.0.1.1",
         "controller_ip": "10.0.1.200"
     },
     {
         "id": "z2",
-        "name": "Milan_MI-1",
-        "latency": "2.38ms",
+        "name": "Belgium",
+        "latency": "0.91ms",
         "index": 1,
         "validator_ip": "10.0.2.1",
         "controller_ip": "10.0.2.200"
     },
     {
         "id": "z3",
-        "name": "Milan_MI-2",
-        "latency": "2.38ms",
+        "name": "Denmark",
+        "latency": "3.17ms",
         "index": 2,
         "validator_ip": "10.0.3.1",
         "controller_ip": "10.0.3.200"
     },
     {
         "id": "z4",
-        "name": "Milan_MI-3",
-        "latency": "2.38ms",
+        "name": "Poland",
+        "latency": "3.34ms",
         "index": 3,
         "validator_ip": "10.0.4.1",
         "controller_ip": "10.0.4.200"
     },
     {
         "id": "z5",
-        "name": "Naples_NA",
-        "latency": "0.96ms",
+        "name": "Czech Republic",
+        "latency": "2.05ms",
         "index": 4,
         "validator_ip": "10.0.5.1",
         "controller_ip": "10.0.5.200"
     },
     {
         "id": "z6",
-        "name": "Bologna_BO",
-        "latency": "1.52ms",
+        "name": "Luxembourg",
+        "latency": "1.17ms",
         "index": 5,
         "validator_ip": "10.0.6.1",
         "controller_ip": "10.0.6.200"
     },
     {
         "id": "z7",
-        "name": "Padua_PD",
-        "latency": "1.97ms",
+        "name": "France",
+        "latency": "2.38ms",
         "index": 6,
         "validator_ip": "10.0.7.1",
         "controller_ip": "10.0.7.200"
     },
     {
         "id": "z8",
-        "name": "Venice_VE",
-        "latency": "1.97ms",
+        "name": "Switzerland",
+        "latency": "1.81ms",
         "index": 7,
         "validator_ip": "10.0.8.1",
         "controller_ip": "10.0.8.200"
     },
     {
         "id": "z9",
-        "name": "Florence_FI",
-        "latency": "1.16ms",
+        "name": "Italy",
+        "latency": "2.60ms",
         "index": 8,
         "validator_ip": "10.0.9.1",
         "controller_ip": "10.0.9.200"
     },
     {
         "id": "z10",
-        "name": "Genoa_GE",
-        "latency": "2.00ms",
+        "name": "Bulgaria",
+        "latency": "6.87ms",
         "index": 9,
         "validator_ip": "10.0.10.1",
         "controller_ip": "10.0.10.200"
     },
     {
         "id": "z11",
-        "name": "Catania_CT",
-        "latency": "2.70ms",
+        "name": "Romania",
+        "latency": "6.47ms",
         "index": 10,
         "validator_ip": "10.0.11.1",
         "controller_ip": "10.0.11.200"
     },
     {
         "id": "z12",
-        "name": "Cagliari_CA",
-        "latency": "2.08ms",
+        "name": "Turkey",
+        "latency": "10.12ms",
         "index": 11,
         "validator_ip": "10.0.12.1",
         "controller_ip": "10.0.12.200"
     },
     {
         "id": "z13",
-        "name": "Sassari_SS",
-        "latency": "1.75ms",
+        "name": "Greece",
+        "latency": "7.91ms",
         "index": 12,
         "validator_ip": "10.0.13.1",
         "controller_ip": "10.0.13.200"
     },
     {
         "id": "z14",
-        "name": "Trieste_TS-1",
-        "latency": "2.59ms",
+        "name": "Cyprus",
+        "latency": "13.06ms",
         "index": 13,
         "validator_ip": "10.0.14.1",
         "controller_ip": "10.0.14.200"
     },
     {
         "id": "z15",
-        "name": "Perugia_PG",
-        "latency": "0.68ms",
+        "name": "Malta",
+        "latency": "8.24ms",
         "index": 14,
         "validator_ip": "10.0.15.1",
         "controller_ip": "10.0.15.200"
     },
     {
         "id": "z16",
-        "name": "Messina_ME",
-        "latency": "2.44ms",
+        "name": "Macedonia",
+        "latency": "6.27ms",
         "index": 15,
         "validator_ip": "10.0.16.1",
         "controller_ip": "10.0.16.200"
     },
     {
         "id": "z17",
-        "name": "Bari_BA",
-        "latency": "1.87ms",
+        "name": "Montenegro",
+        "latency": "5.43ms",
         "index": 16,
         "validator_ip": "10.0.17.1",
         "controller_ip": "10.0.17.200"
     },
     {
         "id": "z18",
-        "name": "Trento_TN",
-        "latency": "2.41ms",
+        "name": "Hungary",
+        "latency": "3.55ms",
         "index": 17,
         "validator_ip": "10.0.18.1",
         "controller_ip": "10.0.18.200"
     },
     {
         "id": "z19",
-        "name": "Lecce_LE",
-        "latency": "2.54ms",
+        "name": "Slovakia",
+        "latency": "3.39ms",
         "index": 18,
         "validator_ip": "10.0.19.1",
         "controller_ip": "10.0.19.200"
     },
     {
         "id": "z20",
-        "name": "Potenza_PZ",
-        "latency": "1.57ms",
+        "name": "Portugal",
+        "latency": "8.57ms",
         "index": 19,
         "validator_ip": "10.0.20.1",
         "controller_ip": "10.0.20.200"
+    },
+    {
+        "id": "z21",
+        "name": "Spain",
+        "latency": "7.15ms",
+        "index": 20,
+        "validator_ip": "10.0.21.1",
+        "controller_ip": "10.0.21.200"
+    },
+    {
+        "id": "z22",
+        "name": "Serbia",
+        "latency": "5.02ms",
+        "index": 21,
+        "validator_ip": "10.0.22.1",
+        "controller_ip": "10.0.22.200"
+    },
+    {
+        "id": "z23",
+        "name": "Croatia",
+        "latency": "3.49ms",
+        "index": 22,
+        "validator_ip": "10.0.23.1",
+        "controller_ip": "10.0.23.200"
+    },
+    {
+        "id": "z24",
+        "name": "Slovenia",
+        "latency": "3.06ms",
+        "index": 23,
+        "validator_ip": "10.0.24.1",
+        "controller_ip": "10.0.24.200"
+    },
+    {
+        "id": "z25",
+        "name": "Austria",
+        "latency": "2.96ms",
+        "index": 24,
+        "validator_ip": "10.0.25.1",
+        "controller_ip": "10.0.25.200"
+    },
+    {
+        "id": "z26",
+        "name": "Lithuania",
+        "latency": "4.90ms",
+        "index": 25,
+        "validator_ip": "10.0.26.1",
+        "controller_ip": "10.0.26.200"
+    },
+    {
+        "id": "z27",
+        "name": "Ireland",
+        "latency": "5.43ms",
+        "index": 26,
+        "validator_ip": "10.0.27.1",
+        "controller_ip": "10.0.27.200"
+    },
+    {
+        "id": "z28",
+        "name": "United Kingdom",
+        "latency": "3.29ms",
+        "index": 27,
+        "validator_ip": "10.0.28.1",
+        "controller_ip": "10.0.28.200"
+    },
+    {
+        "id": "z29",
+        "name": "Sweden",
+        "latency": "5.94ms",
+        "index": 28,
+        "validator_ip": "10.0.29.1",
+        "controller_ip": "10.0.29.200"
     }
 ]
